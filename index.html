@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NPS Webcam URLs</title>
+</head>
+<body>
+    <h1>NPS Webcam URLs</h1>
+    <div id="webcam-list"></div>
+
+    <script>
+        const apiKey = '';
+        const apiUrl = `https://developer.nps.gov/api/v1/webcams?api_key=${apiKey}`;
+
+        // Function to make the API request
+        async function fetchWebcams() {
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                if (data && data.data && data.data.length > 0) {
+                    const webcamList = document.getElementById('webcam-list');
+
+                    data.data.forEach(webcam => {
+                        const title = webcam.title;
+                        const imageUrl = webcam.url;
+
+                        const titleElement = document.createElement('p');
+                        titleElement.textContent = `Title: ${title}`;
+
+                        const urlElement = document.createElement('a');
+                        urlElement.textContent = `Image URL: ${imageUrl}`;
+                        urlElement.href = imageUrl;
+                        urlElement.target = '_blank'; // Open link in a new tab
+
+                        webcamList.appendChild(titleElement);
+                        webcamList.appendChild(urlElement);
+                    });
+                } else {
+                    document.getElementById('webcam-list').textContent = 'No data available.';
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                document.getElementById('webcam-list').textContent = 'Error fetching data.';
+            }
+        }
+
+        // Call the fetchWebcams function when the page loads
+        window.onload = fetchWebcams;
+    </script>
+</body>
+</html>
