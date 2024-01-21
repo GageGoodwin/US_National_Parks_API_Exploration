@@ -1,51 +1,70 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>NPS Webcam URLs</title>
+    <title>National Park Service Live Stream URLs</title>
 </head>
 <body>
-    <h1>NPS Webcam URLs</h1>
+    <h1>National Park Service Live Stream URLs</h1>
     <div id="webcam-list"></div>
 
     <script>
-        const apiKey = '';
-        const apiUrl = `https://developer.nps.gov/api/v1/webcams?api_key=${apiKey}`;
+      const apiKey = '';
+let start = 0;
+const limit = 50; // Assuming the limit is 50 as per your description
+let total = 0;
 
-        // Function to make the API request
-        async function fetchWebcams() {
-            try {
-                const response = await fetch(apiUrl);
-                const data = await response.json();
+// Function to make the API request
+async function fetchWebcams() {
+    try {
+        // Loop until all items are fetched
+        do {
+            const apiUrl = `https://developer.nps.gov/api/v1/webcams?start=${start}&api_key=${apiKey}`;
+            const response = await fetch(apiUrl);
+            const data = await response.json();
 
-                if (data && data.data && data.data.length > 0) {
-                    const webcamList = document.getElementById('webcam-list');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
 
-                    data.data.forEach(webcam => {
-                        const title = webcam.title;
-                        const imageUrl = webcam.url;
+            if (data && data.data && data.data.length > 0) {
+                total = parseInt(data.total, 10);
+                const webcamList = document.getElementById('webcam-list');
 
-                        const titleElement = document.createElement('p');
-                        titleElement.textContent = `Title: ${title}`;
+                data.data.forEach(webcam => {
+                    // Process each webcam item (existing code)
+                    const title = webcam.title;
+                    const imageUrl = webcam.url;
 
-                        const urlElement = document.createElement('a');
-                        urlElement.textContent = `Image URL: ${imageUrl}`;
-                        urlElement.href = imageUrl;
-                        urlElement.target = '_blank'; // Open link in a new tab
+                    const titleElement = document.createElement('p');
+                    titleElement.textContent = `Title: ${title}`;
 
-                        webcamList.appendChild(titleElement);
-                        webcamList.appendChild(urlElement);
-                    });
-                } else {
+                    const urlElement = document.createElement('a');
+                    urlElement.textContent = `Live Stream URL: ${imageUrl}`;
+                    urlElement.href = imageUrl;
+                    urlElement.target = '_blank';
+
+                    webcamList.appendChild(titleElement);
+                    webcamList.appendChild(urlElement);
+                });
+
+                // Update start for the next API call
+                start += data.data.length;
+            } else {
+                if (start === 0) {
                     document.getElementById('webcam-list').textContent = 'No data available.';
                 }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                document.getElementById('webcam-list').textContent = 'Error fetching data.';
+                break;
             }
-        }
+        } while (start < total);
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        document.getElementById('webcam-list').textContent = 'Error fetching data.';
+    }
+}
 
-        // Call the fetchWebcams function when the page loads
-        window.onload = fetchWebcams;
+// Call the fetchWebcams function when the page loads
+window.onload = fetchWebcams;
+
     </script>
 </body>
 </html>
