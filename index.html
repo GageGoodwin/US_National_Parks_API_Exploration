@@ -9,63 +9,55 @@
     <div id="webcam-list"></div>
 
     <script>
-      const apiKey = '';
-let start = 0;
-const limit = 50; // Assuming the limit is 50 as per your description
-let total = 0;
-
-// Function to make the API request
-async function fetchWebcams() {
-    try {
-        // Loop until all items are fetched
-        do {
-            const apiUrl = `https://developer.nps.gov/api/v1/webcams?start=${start}&api_key=${apiKey}`;
-            const response = await fetch(apiUrl);
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+        const apiKey = '';
+        let start = 0;
+        const limit = 50;
+        let total = 0;
+      
+        async function fetchWebcams() {
+            try {
+                do {
+                    const apiUrl = `https://developer.nps.gov/api/v1/webcams?start=${start}&api_key=${apiKey}`;
+                    const response = await fetch(apiUrl);
+                    const data = await response.json();
+      
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+      
+                    if (data && data.data && data.data.length > 0) {
+                        total = parseInt(data.total, 10);
+                        const webcamList = document.getElementById('webcam-list');
+      
+                        data.data.forEach(webcam => {
+                            const title = webcam.title;
+                            const imageUrl = webcam.url;
+      
+                            const urlElement = document.createElement('a');
+                            urlElement.textContent = title; // Title as the clickable text
+                            urlElement.href = imageUrl; // URL as the href
+                            urlElement.target = '_blank';
+                            urlElement.style.display = 'block'; // Display as block for better spacing
+                            urlElement.style.marginBottom = '10px'; // Margin for spacing
+      
+                            webcamList.appendChild(urlElement);
+                        });
+      
+                        start += data.data.length;
+                    } else {
+                        if (start === 0) {
+                            document.getElementById('webcam-list').textContent = 'No data available.';
+                        }
+                        break;
+                    }
+                } while (start < total);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                document.getElementById('webcam-list').textContent = 'Error fetching data.';
             }
-
-            if (data && data.data && data.data.length > 0) {
-                total = parseInt(data.total, 10);
-                const webcamList = document.getElementById('webcam-list');
-
-                data.data.forEach(webcam => {
-                    // Process each webcam item (existing code)
-                    const title = webcam.title;
-                    const imageUrl = webcam.url;
-
-                    const titleElement = document.createElement('p');
-                    titleElement.textContent = `Title: ${title}`;
-
-                    const urlElement = document.createElement('a');
-                    urlElement.textContent = `Live Stream URL: ${imageUrl}`;
-                    urlElement.href = imageUrl;
-                    urlElement.target = '_blank';
-
-                    webcamList.appendChild(titleElement);
-                    webcamList.appendChild(urlElement);
-                });
-
-                // Update start for the next API call
-                start += data.data.length;
-            } else {
-                if (start === 0) {
-                    document.getElementById('webcam-list').textContent = 'No data available.';
-                }
-                break;
-            }
-        } while (start < total);
-    } catch (error) {
-        console.error('Error fetching data:', error);
-        document.getElementById('webcam-list').textContent = 'Error fetching data.';
-    }
-}
-
-// Call the fetchWebcams function when the page loads
-window.onload = fetchWebcams;
-
-    </script>
+        }
+      
+        window.onload = fetchWebcams;
+      </script>
 </body>
 </html>
