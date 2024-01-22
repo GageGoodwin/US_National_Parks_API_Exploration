@@ -1,0 +1,54 @@
+/* Style for the body */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Style for the main header */
+h1 {
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    margin-bottom: 40px;
+}
+
+/* Style for the webcam list */
+#webcam-list {
+    margin: 20px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Style for each webcam title */
+#webcam-list p {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 0;
+}
+
+/* Style for webcam URLs */
+#webcam-list a {
+    color: #1a0dab;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+#webcam-list a:hover {
+    text-decoration: underline;
+}
+
+/* Style for the footer */
+footer {
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 40px;
+    background-color: #333;
+    color: white;
+}
