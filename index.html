@@ -11,8 +11,9 @@
     <script>
         const apiKey = '';
         let start = 0;
-        const limit = 50;
+        const limit = 50; // Adjust the limit as needed
         let total = 0;
+        let webcams = []; // Array to hold all webcam data
       
         async function fetchWebcams() {
             try {
@@ -27,34 +28,46 @@
       
                     if (data && data.data && data.data.length > 0) {
                         total = parseInt(data.total, 10);
-                        const webcamList = document.getElementById('webcam-list');
       
-                        data.data.forEach(webcam => {
-                            const title = webcam.title;
-                            const imageUrl = webcam.url;
-      
-                            const urlElement = document.createElement('a');
-                            urlElement.textContent = title; // Title as the clickable text
-                            urlElement.href = imageUrl; // URL as the href
-                            urlElement.target = '_blank';
-                            urlElement.style.display = 'block'; // Display as block for better spacing
-                            urlElement.style.marginBottom = '10px'; // Margin for spacing
-      
-                            webcamList.appendChild(urlElement);
-                        });
+                        // Add fetched webcams to the array
+                        webcams = webcams.concat(data.data);
       
                         start += data.data.length;
                     } else {
                         if (start === 0) {
-                            document.getElementById('webcam-list').textContent = 'No data available.';
+                            document.getElementById('webcam-list').textContent = 'No webcams available.';
                         }
                         break;
                     }
                 } while (start < total);
+      
+                // Sorting webcams by title in alphabetical order
+                webcams.sort((a, b) => a.title.localeCompare(b.title));
+      
+                // Append sorted webcams to the DOM
+                appendWebcams();
+      
             } catch (error) {
                 console.error('Error fetching data:', error);
                 document.getElementById('webcam-list').textContent = 'Error fetching data.';
             }
+        }
+      
+        function appendWebcams() {
+            const webcamList = document.getElementById('webcam-list');
+            webcams.forEach((webcam, index) => {
+                const title = webcam.title;
+                const imageUrl = webcam.url;
+      
+                const urlElement = document.createElement('a');
+                urlElement.textContent = `${index + 1}. ${title}`; // Adding numbering here
+                urlElement.href = imageUrl;
+                urlElement.target = '_blank';
+                urlElement.style.display = 'block';
+                urlElement.style.marginBottom = '10px';
+      
+                webcamList.appendChild(urlElement);
+            });
         }
       
         window.onload = fetchWebcams;
